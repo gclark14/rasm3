@@ -165,6 +165,9 @@ main:
 	ldr	r1,=str1
 	bl	String_copy
 
+	ldr	r1,=str1
+	mov	r2,#1
+	bl	Substring2
 
 	mov	r0,#0
 	mov	r7,#1
@@ -306,7 +309,7 @@ String_copy:
 	@ load the address of r2 into r2
 	ldr	r2,=strPtr
 
-	mov	r8,#0
+	mov	r8,#0		@ r8 is the counter used as an offset
 copy:
 	ldr	r1,=str1
 	sub	R3,R1,#1	@ R3 will be index while searching string for null
@@ -330,6 +333,49 @@ hunt4zp:
 	add	r8,#1
 	b	hunt4zp
 
+@ start index stored in r2
+Substring2:
+	push	{r0-r10,lr}
+
+    	bl      String_length	@ Get the length of str1.
+	mov	r0,r9		@ put the length of str1 into r0
+
+	@ preserve r0-r3 with this push and pop
+	push	{r0-r3}
+	bl	malloc		@ allocate space
+	pop	{r0-r3}
+
+	sub	r0,r2		@ this is the size of the substring
+	@ length(subStr) = length(str1) - startingIndex
+
+	ldr	r2,=strPtrSubStr2	@ r2 is a ptr to strPtr
+	str	r0,[r2]		@ store the value of r0 into r2
+
+	@ load the address of r2 into r2
+	ldr	r2,=strPtrSubStr2
+	
+	mov	r10,#0 @counter to see if we've reached starting index
+	mov	r9,#0 @offset for substr
+
+
+hunt4zs:
+	ldrb	R5,[R3,#1]!	@ R5 = string1[str1Index++]
+	cmp	r10,r0
+	
+	bge	startCopying
+
+	add	r10,#1
+	b	hunt4z
+
+startCopying:
+	strb	r5,[r2,r9]
+	add	r9,#1
+	cmp	r5,#0
+
+	ldreq	r1,=strPtrSubStr2
+	bleq	printf
+	popeq	{R0-R10,LR}	@ Restore saved register contents
+	bxeq	LR		@ Return to the calling program
 		
 
 	
@@ -375,4 +421,6 @@ checkingIfStringStartsWithAtIndex:
 strPtr:	.word	0
 strPtrAddress:
 	.word	strPtr
+strPtrSubStr2:
+	.word	0
 	.end
