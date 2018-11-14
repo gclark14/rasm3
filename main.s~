@@ -1,0 +1,219 @@
+	.text
+	.global	main
+main:
+
+	@ Print prompt
+	ldr	r1,=theStringIsPrompt
+	bl	printf
+	
+	@ Print the specified string.
+	ldr	r1,=str1
+	bl	printf
+	bl	endl
+
+	@ Print prompt
+	ldr	r1,=strLenPrompt
+	bl	printf
+
+	@ Get the length of the specified string.
+	ldr	r1,=str1
+	bl	String_length
+
+	@ Print the length of the specified string. 
+	mov	r0,r9
+	bl	v_dec
+	bl	endl
+	bl	endl
+
+	@ Comparing str1
+	ldr	r1,=comparePrompt1
+	bl	printf
+	ldr	r1,=str1
+	bl	printf
+	@ To
+	ldr	r1,=comparePrompt2
+	bl	printf
+	ldr	r1,=str2
+	bl	printf
+
+	@ Load the strings to compare
+	ldr	r1,=str1
+	ldr	r2,=str2
+	@ Compare the strings (case sensitive)
+	bl	String_equals
+
+	@ Print the result
+	ldr	r1,=compareResultPrompt
+	bl	printf
+	mov	r0,r9
+	bl	v_dec
+	bl	endl
+	bl	endl
+
+	@ Comparing str1 INSENSITIVE
+	ldr	r1,=comparePrompt1CaseInsensitive
+	bl	printf
+	ldr	r1,=str1
+	bl	printf
+	@ To
+	ldr	r1,=comparePrompt2CaseInsensitive
+	bl	printf
+	ldr	r1,=str2
+	bl	printf
+
+	@ Load the strings to compare
+	ldr	r1,=str1
+	ldr	r2,=str2
+	@ Compare the strings (case in-sensitive)
+	bl	String_equalsIgnoreCase
+	
+	@ Print the result
+	ldr	r1,=compareResultPrompt
+	bl	printf
+	mov	r0,r9
+	bl	v_dec
+	bl	endl
+	bl	endl
+
+
+	
+	@ CharAt
+
+	@ Print prompt
+	ldr	r1,=theStringIsPrompt
+	bl	printf
+	
+	@ Print the specified string.
+	ldr	r1,=str1
+	bl	printf
+	bl	endl
+	
+	@ Give r2 the index to search at
+	mov	r2,#1
+	@ Print prompt
+	ldr	r1,=theCharacterAtIndex
+	bl	printf
+	mov	r0,r2
+	bl	v_dec
+	@ Is 
+	ldr	r1,=is
+	bl	printf
+
+	@ Load r1 with the string to search for 
+	ldr	r1,=str1
+	@ Get the charAt that index 
+	bl	String_charAt
+	@ Print the character at that index
+	ldr	r1,=charAddress
+	bl	printf
+	bl	endl
+
+
+
+	bl	endl
+	@ Print prompt
+	ldr	r1,=theStringIsPrompt
+	bl	printf
+	
+	@ Print the specified string.
+	ldr	r1,=str1
+	bl	printf
+
+	@ Prompt
+	ldr	r1,=checkingIfOneStringStartsWithThisSubstring
+	bl	printf
+	ldr	r1,=subStr
+	bl	printf
+	bl	endl
+
+	@ Load the strings to compare
+	ldr	r1,=str1
+	ldr	r2,=subStr
+	@ Check if str1 starts with str2
+	bl	String_startsWith_2
+	
+	@ Print the result of String_startsWith_2
+	ldr	r1,=theResultIs
+	bl	printf
+	mov	r0,r9
+	bl	v_dec
+
+	bl	endl
+
+
+	@ Test StrBeg1
+	ldr	r1,=str1
+	ldr	r2,=subStr
+	mov	r0,#1
+	bl	String_startsWith_1
+	mov	r0,r9
+	bl	v_dec
+	bl	endl
+
+	mov	r0,#0
+	mov	r7,#1
+	svc	0
+
+String_charAt:
+	push	{R0-R8,LR}	@ Save contents of registers R0 through R8, LR
+	
+	ldr	r9,=charAddress	@ Point r9 to strPtr
+
+	@ R3 is the counter
+	mov	r3,#0
+	@ R7 is the index to look for
+	mov	r7,r2	
+
+	sub	R2,R1,#1	@ R2 will be index while searching string for null.
+hunt4z:	
+	ldrb	R0,[R2,#1]!	@ Load next character from string (and increment R2 by 1)
+
+	@ Have we reached the index to search for?
+	cmp	r3,r7
+	@ Load destination register with the value
+
+	str	r0,[r9]
+
+	popeq	{r0-R8,LR}	@ Restore saved register contents
+	bxeq	LR		@ Return to the calling program
+	@ Have we reached the index to search for?
+
+	add	r3,#1
+	cmp	R0,#0		@ Set Z status bit if null found
+	bne	hunt4z		@ If not null, go examine next character.
+	
+	pop	{R0-R8,LR}	@ Restore saved register contents
+	bx	LR		@ Return to the calling program
+	
+	.data
+str1:	.asciz	"H3y\n" 
+str2:	.asciz	"h3Y\n" 
+subStr:	.asciz	"3y"
+strEndl:
+	.asciz	"\n"
+char:	.word	1
+charAddress:
+	.word	char
+strLenPrompt:
+	.asciz	"The length of the string is (including whitespace): "
+theStringIsPrompt:
+	.asciz	"The String is: " 
+comparePrompt1:
+	.asciz	"Comparing string: " 
+comparePrompt2:
+	.asciz	"to: "
+compareResultPrompt:
+	.asciz	"1 if true, 0 if false\n"
+theResultIs:
+	.asciz 	"The result is: " 
+comparePrompt1CaseInsensitive:
+	.asciz	"Comparing string (case-insensitive): " 
+comparePrompt2CaseInsensitive:
+	.asciz	"to (case insensitive): "
+theCharacterAtIndex:
+	.asciz	"The character at index: "
+is:
+	.asciz	" is "
+checkingIfOneStringStartsWithThisSubstring:
+	.asciz	"Checking if the original string starts with the substring: "
+	.end
