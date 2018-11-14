@@ -1,4 +1,6 @@
 	.text
+	.extern	malloc
+	.extern	free
 	.global	main
 main:
 	@ Print prompt
@@ -160,6 +162,10 @@ main:
 	bl	v_dec
 	bl	endl
 
+	ldr	r1,=str1
+	bl	String_copy
+
+
 	mov	r0,#0
 	mov	r7,#1
 	svc	0
@@ -286,10 +292,43 @@ justReturnIfEndsWithStringIsEmpty:
 
 @ String to copy is str1 stored in r1
 String_copy:
-	push	{r0-r8,r10-r11,lr}
-    	bl      String_length	@ Get the length of str2.
-	
+	push	{r0-r8,lr}
+
+    	bl      String_length	@ Get the length of str1.
+
+	mov	r0,r9		@ put the length of str1 into r0
+
+	bl	malloc		@ allocate space
+
+	ldr	r2,=strPtr	@ r2 is a ptr to strPtr
+	str	r0,[r2]		@ store the value of r0 into r2
+
+	@ load the address of r2 into r2
+	ldr	r2,=strPtr
+
+	mov	r8,#0
+copy:
+	ldr	r1,=str1
+	sub	R3,R1,#1	@ R3 will be index while searching string for null
 			
+hunt4zp:	
+	ldrb	R5,[R3,#1]!	@ R5 = string1[str1Index++]
+
+	@ store the character r5, into r2, at an offset of r8
+	strb	r5,[r2,r8]
+
+	@ If they are equal are they null terminators?
+	cmp	r5,#0
+	@ldreq	r9,=strPtr
+	ldreq	r1,=strPtr
+	bleq	printf
+	popeq	{R0-R8,LR}	@ Restore saved register contents
+	bxeq	LR		@ Return to the calling program
+
+	@ Otherwise, the strings are equal and more string remains. 
+	@ Continue to check the rest of the strings
+	add	r8,#1
+	b	hunt4zp
 
 		
 
@@ -333,4 +372,7 @@ checkingIfOneStringStartsWithThisSubstring:
 	.asciz	"Checking if the original string starts with the substring: "
 checkingIfStringStartsWithAtIndex:
 	.asciz	"Checking if the string starts with the substring at index: "
+strPtr:	.word	0
+strPtrAddress:
+	.word	strPtr
 	.end
