@@ -166,8 +166,14 @@ main:
 	bl	String_copy
 
 	ldr	r1,=str1
-	mov	r2,#0
+	mov	r2,#1
 	bl	Substring2
+
+	ldr	r1,=str1
+	mov	r2,#1
+	mov	r3,#2
+	bl	Substring1
+	bl	endl
 
 	mov	r0,#0
 	mov	r7,#1
@@ -380,6 +386,53 @@ startCopying:
 		
 	b	hunt4zs
 
+@ start index stored in r2
+@ end index stored in r3
+Substring1:
+	push	{r0-r10,lr}
+
+    	bl      String_length	@ Get the length of str1.
+
+	sub	r0,r2,r9		@ this is the size of the substring
+	@ length(subStr) = endIndex -  startingIndex
+
+	push	{r1-r3}
+
+	bl	malloc		@ allocate space
+
+	pop	{r1-r3}
+
+	mov	r7,r2 		@ This is the starting index
+
+	ldr	r2,=strPtrSubStr1	@ r2 is a ptr to strPtr
+	str	r0,[r2]		@ store the value of r0 into r2
+
+	mov	r10,#0 @ counter to see if we've reached starting index
+	mov	r9,#0 @ offset for substr
+
+	sub	R6,R1,#1	@ R3 will be index while searching string for null
+
+hunt4zsg:
+	ldrb	R5,[R6,#1]!	@ R5 = string1[str1Index++]
+	cmp	r10,r7
+	
+	bge	startCopyingg
+
+	add	r10,#1
+	b	hunt4zsg
+
+startCopyingg:
+	strb	r5,[r2,r9]
+	add	r9,#1
+	cmp	r10,r3
+
+	ldreq	r1,=strPtrSubStr1
+	bleq	printf
+	popeq	{R0-R10,LR}	@ Restore saved register contents
+	bxeq	LR		@ Return to the calling program
+		
+	add	r10,#1
+	b	hunt4zsg
 	
 	.data
 str1:	.asciz	"H3y0\n" 
@@ -424,5 +477,7 @@ strPtr:	.word	0
 strPtrAddress:
 	.word	strPtr
 strPtrSubStr2:
+	.word	0
+strPtrSubStr1:
 	.word	0
 	.end
