@@ -162,80 +162,20 @@ main:
 	bl	endl
 	bl	endl
 
-	@@ 4 
-	ldr	r1,=strCopying
-	bl	printf
-	ldr	r1,=str1
-	bl	printf
-	bl	endl
-	ldr	r1,=theResultIs
-	bl	printf
-	ldr	r1,=str1
-	bl	String_copy
-	bl	endl
-	bl	endl
 
-	@ 5
-	ldr	r1,=substring1	
-	bl	printf
-	ldr	r1,=str3
-	bl	printf
-	bl	endl
-	ldr	r1,=theIndicesAre
-	bl	printf
-	mov	r2,#4
-	mov	r0,r2
-	bl	v_dec
-	ldr	r1,=and
-	bl	printf
-	mov	r3,#13
-	mov	r0,r3
-	bl	v_dec
-	bl	endl
-	ldr	r1,=theResultIs
-	bl	printf
-	ldr	r1,=str3
-	mov	r2,#4
-	mov	r3,#13
-	bl	Substring1
-	bl	endl
-	bl	endl
-
-	@ 6
-	ldr	r1,=substring1	
-	bl	printf
-	ldr	r1,=str3
-	bl	printf
-	bl	endl
-	ldr	r1,=theIndexToStartAtIs
-	bl	printf
-	mov	r2,#7
-	mov	r0,r2
-	bl	v_dec
-	bl	endl	
-	ldr	r1,=theResultIs
-	bl	printf
-	ldr	r1,=str3
-	mov	r2,#7
-	bl	Substring2
-	bl	endl
-	bl	endl
-
-
-
-
-
-	@ 7	
+	
 	@ CharAt
 	@ Print prompt
 	ldr	r1,=theStringIsPrompt
 	bl	printf
+	
 	@ Print the specified string.
-	ldr	r1,=str2
+	ldr	r1,=str1
 	bl	printf
 	bl	endl
+	
 	@ Give r2 the index to search at
-	mov	r2,#4
+	mov	r2,#1
 	@ Print prompt
 	ldr	r1,=theCharacterAtIndex
 	bl	printf
@@ -244,53 +184,27 @@ main:
 	@ Is 
 	ldr	r1,=is
 	bl	printf
+
 	@ Load r1 with the string to search for 
-	ldr	r1,=str2
+	ldr	r1,=str1
 	@ Get the charAt that index 
 	bl	String_charAt
 	@ Print the character at that index
 	ldr	r1,=charAddress
 	bl	printf
 	bl	endl
-	bl	endl
 
 
-	@ 8
-	@ Test StrBeg1
-	ldr	r1,=theStringIsPrompt
-	bl	printf
-	@ Print the specified string.
-	ldr	r1,=str1
-	bl	printf
-	bl	endl
-	ldr	r1,=checkingIfOneStringStartsWithThisSubstring
-	bl	printf
-	ldr	r1,=strBeginsWithAtIndex
-	bl	printf
-	ldr	r1,=at
-	bl	printf
-	mov	r0,#11
-	bl	v_dec
-	bl	endl
 
-	ldr	r1,=str1
-	ldr	r2,=strBeginsWithAtIndex
-	mov	r0,#11
-	bl	String_startsWith_1
-	ldr	r1,=theResultIs
-	bl	printf
-	mov	r0,r9
-	bl	v_dec
 	bl	endl
-	bl	endl
-
-	@ 9
 	@ Print prompt
 	ldr	r1,=theStringIsPrompt
 	bl	printf
+	
 	@ Print the specified string.
 	ldr	r1,=str1
 	bl	printf
+
 	@ Prompt
 	bl	endl
 	ldr	r1,=checkingIfOneStringStartsWithThisSubstring
@@ -310,34 +224,39 @@ main:
 	bl	printf
 	mov	r0,r9
 	bl	v_dec
-	bl	endl
+
 	bl	endl
 
 
-	@ 10
-	@ Test StrEndsWith
-	ldr	r1,=theStringIsPrompt
-	bl	printf
-	@ Print the specified string.
+	@ Test StrBeg1
 	ldr	r1,=str1
-	bl	printf
-	bl	endl
-
-	ldr	r1,=endsWith
-	bl	printf
-	ldr	r1,=strEndsWith
-	bl	printf
-	bl	endl	
-
-	ldr	r1,=str1
-	ldr	r2,=strEndsWith
-	bl	String_endsWith	
-	ldr	r1,=theResultIs
-	bl	printf
+	ldr	r2,=strBeginsWithAtIndex
+	mov	r0,#1
+	bl	String_startsWith_1
 	mov	r0,r9
 	bl	v_dec
 	bl	endl
 
+	@ Test StrEndsWith
+	ldr	r1,=str1
+	ldr	r2,=strEndsWith
+	bl	String_endsWith	
+	mov	r0,r9
+	bl	v_dec
+	bl	endl
+
+	ldr	r1,=str1
+	bl	String_copy
+
+	ldr	r1,=str1
+	mov	r2,#1
+	bl	Substring2
+
+	ldr	r1,=str1
+	mov	r2,#1
+	mov	r3,#2
+	bl	Substring1
+	bl	endl
 
 	mov	r0,#0
 	mov	r7,#1
@@ -557,10 +476,7 @@ Substring1:
 
     	bl      String_length	@ Get the length of str1.
 
-	mov	r8,r3
-	
-	sub	r0,r3,r2	@ this is the size of the substring
-	add	r0,#1	@ test
+	sub	r0,r2,r9		@ this is the size of the substring
 	@ length(subStr) = endIndex -  startingIndex
 
 	push	{r1-r3}
@@ -571,9 +487,7 @@ Substring1:
 
 	mov	r7,r2 		@ This is the starting index
 
-	
-	ldr	r2,=strPtrSubStr1
-	str	r0,[r2]
+e insensiti
 
 	mov	r10,#0 @ counter to see if we've reached starting index
 	mov	r9,#0 @ offset for substr
@@ -582,7 +496,7 @@ Substring1:
 
 hunt4zsg:
 	ldrb	R5,[R6,#1]!	@ R5 = string1[str1Index++]
-	cmp	r10,r7		
+	cmp	r10,r7
 	
 	bge	startCopyingg
 
@@ -592,23 +506,15 @@ hunt4zsg:
 startCopyingg:
 	strb	r5,[r2,r9]
 	add	r9,#1
-	cmp	r10,r8		
+	cmp	r10,r3
 
-		
-	beq	exit
-	add	r10,#1
-	b	hunt4zsg
-	
-exit:
-	mov	r0,#0
-	strb	r0,[r2,r9]
-	cmp	r0,#0
 	ldreq	r1,=strPtrSubStr1
 	bleq	printf
 	popeq	{R0-R10,LR}	@ Restore saved register contents
 	bxeq	LR		@ Return to the calling program
-	
-	
+		
+	add	r10,#1
+	b	hunt4zsg
 	
 	.data
 str1:	.asciz	"Cat in the hat" 
@@ -616,11 +522,11 @@ str2:	.asciz	"Green eggs and ham"
 str3:	.asciz	"cat in the hat"
 @subStr:	.asciz	"H3"
 strBeginsWith:	
-	.asciz	"Cat"
+	.asciz	"H3"
 strBeginsWithAtIndex:	
-	.asciz	"hat"
+	.asciz	"3y0"
 strEndsWith:
-	.asciz	"in the hat"
+	.asciz	"\n"
 strEndl:
 	.asciz	"\n"
 char:	.word	1
@@ -658,17 +564,11 @@ strPtrSubStr2:
 strPtrSubStr1:
 	.word	0
 strCopying:
-	.asciz	"Making a copy of the string: "
+	.asciz	"Making a copy of the strings "
 and:
 	.asciz	" and "
 substring1:
 	.asciz "The string to create substring from is: "
 theIndicesAre:
 	.asciz	"The indeces are: "
-theIndexToStartAtIs:
-	.asciz	"The index to start at is: "
-at:
-	.asciz	" at index "
-endsWith:
-	.asciz	"Checking to make sure the string ends with: "
 	.end
